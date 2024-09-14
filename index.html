@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Custom Map Example</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        #map {
+            width: 100%;
+            height: 100vh;
+            background-image: url('zoomap.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            position: relative;
+        }
+
+        .marker {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: rgb(0, 0, 255);
+            border-radius: 50%;
+            border: 1.5px solid rgb(0, 0, 0);
+            transform: translate(-50%, -50%);
+            box-sizing: border-box;
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        let marker;
+
+        function updateMarkerPosition(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            const mapBounds = {
+                north: 20.5,
+                south: 20.2,
+                east: 86.0,
+                west: 85.6
+            };
+
+            const map = document.getElementById('map');
+            const mapWidth = map.clientWidth;
+            const mapHeight = map.clientHeight;
+
+            const x = (longitude - mapBounds.west) / (mapBounds.east - mapBounds.west) * mapWidth;
+            const y = (mapBounds.north - latitude) / (mapBounds.north - mapBounds.south) * mapHeight;
+
+            if (!marker) {
+                marker = document.createElement('div');
+                marker.className = 'marker';
+                map.appendChild(marker);
+            }
+
+            marker.style.left = `${x}px`;
+            marker.style.top = `${y}px`;
+        }
+
+        function handleError(error) {
+            console.error('Error occurred while getting location:', error);
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(updateMarkerPosition, handleError);
+        } else {
+            console.log('Geolocation is not supported by this browser.');
+        }
+    </script>
+</body>
+</html>
